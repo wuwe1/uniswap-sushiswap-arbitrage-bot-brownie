@@ -1,6 +1,7 @@
 dependencies:
   - "Uniswap/v2-core@1.0.1"
   - "Uniswap/v2-periphery@1.0.0-beta.0"
+  - "OpenZeppelin/openzeppelin-contracts@4.4.0"
 compiler:
   solc:
     optimizer:
@@ -9,6 +10,7 @@ compiler:
     remappings:
       - "@uniswap/v2-core=Uniswap/v2-core@1.0.1"
       - "@uniswap/v2-periphery=Uniswap/v2-periphery@1.0.0-beta.0"
+      - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.4.0"
 networks:
   default: mainnet-fork
   mainnet-fork:
