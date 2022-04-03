@@ -1,0 +1,16 @@
+dependencies:
+  - "Uniswap/v2-core@1.0.1"
+  - "Uniswap/v2-periphery@1.0.0-beta.0"
+compiler:
+  solc:
+    optimizer:
+      enabled: true
+      runs: 800
+    remappings:
+      - "@uniswap/v2-core=Uniswap/v2-core@1.0.1"
+      - "@uniswap/v2-periphery=Uniswap/v2-periphery@1.0.0-beta.0"
+networks:
+  default: mainnet-fork
+  mainnet-fork:
+    UNISWAP_V2_ROUTER: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+    SUSHISWAP_V2_ROUTER: 0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F
