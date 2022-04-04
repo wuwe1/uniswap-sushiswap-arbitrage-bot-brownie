@@ -4,8 +4,8 @@ Brownie version of https://github.com/6eer/uniswap-sushiswap-arbitrage-bot
 
 With some modifications:
 
-[x] Compute maximizing trade amount locally instead of `eth_call` to `Utils`
-[ ] Use Multicall
+- [x] Compute maximizing trade amount locally instead of `eth_call` to `Utils`
+- [ ] Use Multicall
 
 ## How to run
 
