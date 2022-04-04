@@ -36,19 +36,28 @@ def deploy(uA, uB, sA, sB):
     ]
     u_router = interface.IUniswapV2Router01(UNISWAP_V2_ROUTER)
     s_router = interface.IUniswapV2Router01(SUSHISWAP_V2_ROUTER)
-    token0.approve(u_router, 1e20, {"from": a[0]})
-    token1.approve(u_router, 1e20, {"from": a[0]})
 
     u_factory = u_router.factory()
     u_pair = pair_for(u_factory, token0.address, token1.address)
+    # s_factory = s_router.factory()
+    # s_pair = pair_for(s_factory, token0.address, token1.address)
+
+    # 0xCA5A84F964bB8f40C82B486c7aC4597E9639088e
 
     token0.transfer(u_pair, 1000, {"from": a[0]})
     token1.transfer(u_pair, 1000, {"from": a[0]})
+    # token0.transfer(s_pair, 1000, {"from": a[0]})
+    # token1.transfer(s_pair, 1000, {"from": a[0]})
 
+    token0.approve(u_router, uA, {"from": a[0]})
+    token1.approve(u_router, uB, {"from": a[0]})
     u_router.addLiquidity(token0, token1, uA, uB, 0, 0, a[0], deadline, {"from": a[0]})
     token0.approve(s_router, sA, {"from": a[0]})
     token1.approve(s_router, sB, {"from": a[0]})
-    s_router.addLiquidity(token0, token1, sA, sB, 0, 0, a[0], deadline, {"from": a[0]})
+    tx = s_router.addLiquidity(
+        token0, token1, sA, sB, 0, 0, a[0], deadline, {"from": a[0]}
+    )
+    s_pair = tx.events["PairCreated"][0][0]["pair"]
 
     # deploy arbitrager
     arbitrager = Arbitrager.deploy(s_router, u_router, {"from": a[0]})
@@ -59,6 +68,8 @@ def deploy(uA, uB, sA, sB):
     print(f"arbitrager: {arbitrager}")
     print(f"deployment finished in {elapsed.total_seconds()}s")
 
+    return arbitrager, u_pair, s_pair, token0, token1
+
 
 def deploy_case_a():
     # case A: token1 cheaper on sushiswap
@@ -68,7 +79,7 @@ def deploy_case_a():
         1e4,
         10e4,
     )
-    deploy(uA, uB, sA, sB)
+    return deploy(uA, uB, sA, sB)
 
 
 def deploy_case_b():
@@ -79,4 +90,8 @@ def deploy_case_b():
         3e4,
         10e4,
     )
-    deploy(uA, uB, sA, sB)
+    return deploy(uA, uB, sA, sB)
+
+
+def main():
+    deploy_case_a()
