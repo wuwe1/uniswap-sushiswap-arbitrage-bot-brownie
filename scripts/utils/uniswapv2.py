@@ -1,24 +1,28 @@
 import math
+from typing import Tuple
 
 UINT_256_MAX = 2**256 - 1
 
 
 def compute_profit_maximizing_trade(
-    true_price_token_a, true_price_token_b, reserve_a, reserve_b
-):
-    a_to_b = reserve_a / reserve_b < true_price_token_a / true_price_token_b
+    true_price_token_a: int, true_price_token_b: int, reserve_a: int, reserve_b: int
+) -> Tuple[bool, int]:
+    a_to_b = div(reserve_a, reserve_b) < div(true_price_token_a, true_price_token_b)
     invariant = reserve_a * reserve_b
     left_side = (
-        math.sqrt(invariant * 1000 * true_price_token_a / (true_price_token_b * 997))
+        math.sqrt(
+            div(invariant * 1000 * true_price_token_a, (true_price_token_b * 997))
+        )
         if a_to_b
         else math.sqrt(
-            invariant * 1000 * true_price_token_b / (true_price_token_a * 997)
+            div(invariant * 1000 * true_price_token_b, (true_price_token_a * 997))
         )
     )
-    right_side = reserve_a * 1000 if a_to_b else reserve_b * 0.997
+    left_side = int(left_side)
+    right_side = reserve_a * 1000 if a_to_b else div(reserve_b * 1000, 997)
     if left_side < right_side:
         return False, 0
-    return a_to_b, left_side - right_side
+    return a_to_b, int(left_side - right_side)
 
 
 def div(a, b) -> int:
