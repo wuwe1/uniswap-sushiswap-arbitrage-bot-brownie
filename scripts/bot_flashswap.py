@@ -1,34 +1,12 @@
-import math
 import time
 import eth_abi
 from brownie import web3, interface, a
 from .deploy_utils import deploy_case_a
-
-
-def compute_profit_maximizing_trade(
-    true_price_token_a, true_price_token_b, reserve_a, reserve_b
-):
-    a_to_b = reserve_a / reserve_b < true_price_token_a / true_price_token_b
-    invariant = reserve_a * reserve_b
-    left_side = (
-        math.sqrt(invariant * 1000 * true_price_token_a / (true_price_token_b * 997))
-        if a_to_b
-        else math.sqrt(
-            invariant * 1000 * true_price_token_b / (true_price_token_a * 997)
-        )
-    )
-    right_side = reserve_a * 1000 if a_to_b else reserve_b * 0.997
-    if left_side < right_side:
-        return False, 0
-    return a_to_b, left_side - right_side
-
-
-def get_amount_out(amount_in, reserve_in, reserve_out):
-    return (0.997 * reserve_out * amount_in) / (reserve_in + amount_in)
-
-
-def get_amount_in(amount_out, reserve_in, reserve_out):
-    return (reserve_in * amount_out) / (reserve_out - amount_out) * (1000 / 997)
+from .utils.uniswapv2 import (
+    compute_profit_maximizing_trade,
+    get_amount_in,
+    get_amount_out,
+)
 
 
 def arbitrage(arbitrager, u_pair, s_pair, token0, token1, block_number, timestamp):
