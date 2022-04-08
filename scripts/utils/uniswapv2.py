@@ -5,7 +5,7 @@ UINT_256_MAX = 2**256 - 1
 
 
 def compute_profit_maximizing_trade(
-    s_a: int, s_b: int, u_a: int, u_b: int
+    sa: int, sb: int, ua: int, ub: int
 ) -> Tuple[bool, int]:
     """
     a -> b:
@@ -19,15 +19,13 @@ def compute_profit_maximizing_trade(
     -ub + ───────────────
                 sa
     """
-    a_to_b = u_a / u_b < s_a / s_b
-    invariant = u_a * u_b
+    a_to_b = ua / ub < sa / sb
+    k = ua * ub
+    scale = 1000 / 997
     left_side = (
-        math.sqrt(div(invariant * 1000 * s_a, (s_b * 997)))
-        if a_to_b
-        else math.sqrt(div(invariant * 1000 * s_b, (s_a * 997)))
+        math.sqrt(k * sa / sb * scale) if a_to_b else math.sqrt(k * sb / sa * scale)
     )
-    left_side = int(left_side)
-    right_side = u_a * 1000 if a_to_b else div(u_b * 1000, 997)
+    right_side = ua * scale if a_to_b else ub * scale
     if left_side < right_side:
         return False, 0
     return a_to_b, int(left_side - right_side)
@@ -88,7 +86,9 @@ def compute_equal_price_trade(sa, sb, ua, ub):
     k1 = sa * sb * ua * ub
     left_side = math.sqrt(k1) * (sa + ua) if a_to_b else math.sqrt(k1) * (sb + ub)
     left_side = left_side * 1000 / 997
-    right_side = sa * ua * (sb + ub) if a_to_b else sb * ub * (sa + ua) * 1000 / 997
+    right_side = (
+        sa * ua * (sb + ub) * 1000 / 997 if a_to_b else sb * ub * (sa + ua) * 1000 / 997
+    )
     if left_side < right_side:
         return False, 0
     else:
