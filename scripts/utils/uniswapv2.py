@@ -7,7 +7,7 @@ UINT_256_MAX = 2**256 - 1
 def compute_profit_maximizing_trade(
     true_price_token_a: int, true_price_token_b: int, reserve_a: int, reserve_b: int
 ) -> Tuple[bool, int]:
-    a_to_b = div(reserve_a, reserve_b) < div(true_price_token_a, true_price_token_b)
+    a_to_b = reserve_a / reserve_b < true_price_token_a / true_price_token_b
     invariant = reserve_a * reserve_b
     left_side = (
         math.sqrt(
