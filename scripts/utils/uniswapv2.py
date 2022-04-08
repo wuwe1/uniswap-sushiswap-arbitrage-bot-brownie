@@ -64,3 +64,32 @@ def get_amount_in(amount_out, reserve_in, reserve_out) -> int:
     n = reserve_in * amount_out * 1000
     d = (reserve_out - amount_out) * 997
     return div(n, d) + 1
+
+
+def compute_equal_price_trade(sa, sb, ua, ub):
+    """
+    make two dex price equal after trade
+
+    from s get a, swap a for b in u:
+    Eq((sa - x) / (sb + (sb * x)/(sa - x)), (ua + x) / (ub - (ub * x)/ (ua + x)))
+                         _____________
+    -sa⋅ua⋅(sb + ub) + ╲╱ sa⋅sb⋅ua⋅ub ⋅(sa + ua)
+    ────────────────────────────────────────────
+                sa⋅sb - ua⋅ub
+
+    from s get b, swap b for a in u:
+    Eq((sa + (sa * x)/(sb - x)) / (sb - x), (ua - (ua * x)/(ub + x)) / (ub + x))
+                         _____________
+    -sb⋅ub⋅(sa + ua) + ╲╱ sa⋅sb⋅ua⋅ub ⋅(sb + ub)
+    ────────────────────────────────────────────
+                sa⋅sb - ua⋅ub
+    """
+    a_to_b = ua / ub < sa / sb
+    k1 = sa * sb * ua * ub
+    left_side = math.sqrt(k1) * (sa + ua) if a_to_b else math.sqrt(k1) * (sb + ub)
+    left_side = left_side * 1000 / 997
+    right_side = sa * ua * (sb + ub) if a_to_b else sb * ub * (sa + ua) * 1000 / 997
+    if left_side < right_side:
+        return False, 0
+    else:
+        return a_to_b, int((left_side - right_side) / (sa * sb - ua * ub))
