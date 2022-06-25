@@ -19,6 +19,7 @@ contract Arbitrager {
         uint256 _amount1,
         bytes calldata _data
     ) external {
+        // no need to do access control here
         address[] memory path = new address[](2);
         (uint256 amountRequired, uint256 deadline) = abi.decode(
             _data,
